@@ -9,3 +9,7 @@ autopublish
 insecure
 iron:router
 jquery
+meteorhacks:npm
+
+
+npm-container
