@@ -1,4 +1,0 @@
-// Npm modules goes there
-{
-	
-}
