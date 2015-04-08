@@ -1,0 +1,51 @@
+{
+	"public": {
+		"bpmByGenre": [
+			{
+				"name": "tango",
+				"bpmMin": 50,
+				"bpmMax": 56
+			}, {
+				"name": "cumbia",
+				"bpmMin": 70,
+				"bpmMax": 80
+			}, {
+				"name": "hip hop",
+				"bpmMin": 80,
+				"bpmMax": 100
+			}, {
+				"name": "reggae",
+				"bpmMin": 70,
+				"bpmMax": 90
+			}, {
+				"name": "salsa",
+				"bpmMin": 80,
+				"bpmMax": 100
+			}, {
+				"name": "minimal",
+				"bpmMin": 120,
+				"bpmMax": 135
+			}, {
+				"name": "house",
+				"bpmMin": 100,
+				"bpmMax": 130
+			}, {
+				"name": "techno",
+				"bpmMin": 115,
+				"bpmMax": 145
+			}, {
+				"name": "electro",
+				"bpmMin": 105,
+				"bpmMax": 135
+			}, {
+				"name": "funky house",
+				"bpmMin": 108,
+				"bpmMax": 136
+			}, {
+				"name": "dubstep",
+				"bpmMin": 138,
+				"bpmMax": 142
+			}
+		]
+	}
+}
