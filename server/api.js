@@ -24,8 +24,7 @@ function searchForTracks(hearthBeat){
 	HTTP.get(url, function(err, result) {
 		if(err) {
 			console.log('Error: ', err);
-		} else {
-	 		var index = getRandomInt(result.data.data.length, 0);		
+		} else {	
 			chooseOneTrack(result.data.data, options);
 		}
 	});
@@ -33,14 +32,12 @@ function searchForTracks(hearthBeat){
 function chooseOneTrack(data, options){
 	var searchResult = data;
 	console.log('Nb of data', searchResult.length);
-	var bpmMin = options.bpmMin;
-	var bpmMax = options.bpmMax;
 
 	var index = Math.floor(Math.random() * searchResult.length);
 	getTrack(searchResult[index].id, function(data){
-		console.log(data.bpm);
-		if(data.bpm > bpmMin && data.bpm < bpmMax){
+		if(data.bpm > options.bpmMin && data.bpm < options.bpmMax){
 			console.log(data);
+			return data;
 		} else {
 			searchResult.splice(index, 1);
 			if(searchResult.length > 0) {
@@ -71,6 +68,6 @@ function getRandomInt(min, max) {
 HTTP.methods({
 	'/songs/:bpm': function() {
 		searchForTracks(this.params.bpm);
-		return this.params.bpm;
+		return "arthur";
 	}
 });
