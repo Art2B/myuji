@@ -1,3 +1,5 @@
+var Future = Npm.require("fibers/future");
+
 function getGenre(hearthBeat){
 	var genres = Meteor.settings.public.bpmByGenre;
 	var selectedGenres = [];
@@ -12,41 +14,51 @@ function getGenre(hearthBeat){
 	var selected = {
 		name: selectedGenres[getRandomInt(selectedGenres.length-1, 0)].name,
 		bpmMin: mapRange(hearthBeat*0.9, 55, 85, 50, 140),
-		bpmMax: mapRange(hearthBeat*1.1, 55, 85, 50, 140)
+		bpmMax: mapRange(hearthBeat*1.1, 55, 85, 50, 140),
+		hearthBeat: hearthBeat
 	};
 	return selected;
 };
-function searchForTracks(hearthBeat){
+function searchForTracks(hearthBeat, beginIndex){
 	var options = getGenre(hearthBeat);
 	console.log(options);
-	var url = "https://api.deezer.com/search?q="+options.name;
+	var url = "https://api.deezer.com/search?&index="+beginIndex+"&limit=25&order=RATING_DESC&q="+options.name;
 
+	var fut = new Future();
 	HTTP.get(url, function(err, result) {
 		if(err) {
 			console.log('Error: ', err);
 		} else {	
-			chooseOneTrack(result.data.data, options);
+			var song = chooseOneTrack(result.data.data, options);
+			fut.return(song);
 		}
 	});
+	var song = fut.wait();
+	return song;
 };
 function chooseOneTrack(data, options){
 	var searchResult = data;
 	console.log('Nb of data', searchResult.length);
 
-	var index = Math.floor(Math.random() * searchResult.length);
-	getTrack(searchResult[index].id, function(data){
-		if(data.bpm > options.bpmMin && data.bpm < options.bpmMax){
-			console.log(data);
-			return data;
+	var songFounded = false;
+	do {
+		var index = Math.floor(Math.random() * searchResult.length);
+    	
+    	var fut = new Future();
+		getTrack(searchResult[index].id, function(data){
+			fut.return(data);
+		});
+		var song = fut.wait();
+		
+		if(song.bpm > options.bpmMin && song.bpm < options.bpmMax){
+			songFounded = true;
+			return song;
 		} else {
 			searchResult.splice(index, 1);
-			if(searchResult.length > 0) {
-				chooseOneTrack(searchResult, options);
-			} else {
-				searchForTracks();
-			}
 		}
-	});
+
+	} while (searchResult.length > 0 && !songFounded);
+	return;
 };
 function getTrack(id, callback){
 	var url = "https://api.deezer.com/track/"+id;
@@ -66,8 +78,19 @@ function getRandomInt(min, max) {
 };
 
 HTTP.methods({
-	'/songs/:bpm': function() {
-		searchForTracks(this.params.bpm);
-		return "arthur";
+	'/songs/:hearthbeat': function() {
+		if(this.params.hearthbeat < 55){
+			return "The specified hearthbeat is too low";
+		}
+		if(this.params.hearthbeat > 85){
+			return "The specified hearthbeat is too high";
+		}
+		var step = 0;
+		var songToReturn;
+		do {
+			songToReturn = searchForTracks(this.params.hearthbeat, step);
+			step += 25;
+		} while(!songToReturn);
+		return JSON.stringify(songToReturn, null, '\t');
 	}
 });
