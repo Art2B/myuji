@@ -47,5 +47,13 @@
 				"bpmMax": 142
 			}
 		]
+	},
+	"biology": {
+		"hearthBeatMin": 50,
+		"hearthBeatMax": 80
+	},
+	"music": {
+		"bpmMin": 50,
+		"bpmMax": 140
 	}
 }

@@ -4,7 +4,7 @@ function getGenre(hearthBeat){
 	var genres = Meteor.settings.public.bpmByGenre;
 	var selectedGenres = [];
 
-	var bpm = mapRange(hearthBeat, 55, 85, 50, 140)
+	var bpm = mapRange(hearthBeat, Meteor.settings.biology.hearthBeatMin, Meteor.settings.biology.hearthBeatMax, Meteor.settings.music.bpmMin, Meteor.settings.music.bpmMax)
 
 	genres.forEach(function(value, index){
 		if(bpm >= value.bpmMin && bpm <= value.bpmMax){
@@ -13,8 +13,8 @@ function getGenre(hearthBeat){
 	});
 	var selected = {
 		name: selectedGenres[getRandomInt(selectedGenres.length-1, 0)].name,
-		bpmMin: mapRange(hearthBeat*0.9, 55, 85, 50, 140),
-		bpmMax: mapRange(hearthBeat*1.1, 55, 85, 50, 140),
+		bpmMin: mapRange(hearthBeat*0.9, Meteor.settings.biology.hearthBeatMin, Meteor.settings.biology.hearthBeatMax, Meteor.settings.music.bpmMin, Meteor.settings.music.bpmMax),
+		bpmMax: mapRange(hearthBeat*1.1, Meteor.settings.biology.hearthBeatMin, Meteor.settings.biology.hearthBeatMax, Meteor.settings.music.bpmMin, Meteor.settings.music.bpmMax),
 		hearthBeat: hearthBeat
 	};
 	return selected;
@@ -79,10 +79,11 @@ function getRandomInt(min, max) {
 
 HTTP.methods({
 	'/songs/:hearthbeat': function() {
-		if(this.params.hearthbeat < 55){
+		this.addHeader('Access-Control-Allow-Origin', '*');
+		if(this.params.hearthbeat < Meteor.settings.biology.hearthBeatMin){
 			return "The specified hearthbeat is too low";
 		}
-		if(this.params.hearthbeat > 85){
+		if(this.params.hearthbeat > Meteor.settings.biology.hearthBeatMax){
 			return "The specified hearthbeat is too high";
 		}
 		var step = 0;
@@ -91,6 +92,7 @@ HTTP.methods({
 			songToReturn = searchForTracks(this.params.hearthbeat, step);
 			step += 25;
 		} while(!songToReturn);
-		return JSON.stringify(songToReturn, null, '\t');
+		console.log(songToReturn);
+		return JSON.stringify(songToReturn.id, null, '\t');;
 	}
 });
