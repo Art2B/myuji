@@ -21,7 +21,6 @@ function getGenre(hearthBeat){
 };
 function searchForTracks(hearthBeat, beginIndex){
 	var options = getGenre(hearthBeat);
-	console.log(options);
 	var url = "https://api.deezer.com/search?&index="+beginIndex+"&limit=25&order=RATING_DESC&q="+options.name;
 
 	var fut = new Future();
@@ -38,7 +37,6 @@ function searchForTracks(hearthBeat, beginIndex){
 };
 function chooseOneTrack(data, options){
 	var searchResult = data;
-	console.log('Nb of data', searchResult.length);
 
 	var songFounded = false;
 	do {
@@ -92,7 +90,6 @@ HTTP.methods({
 			songToReturn = searchForTracks(this.params.hearthbeat, step);
 			step += 25;
 		} while(!songToReturn);
-		console.log(songToReturn);
 		return JSON.stringify(songToReturn.id, null, '\t');;
 	}
 });
